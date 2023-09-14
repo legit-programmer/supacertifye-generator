@@ -101,4 +101,9 @@ for row in model_sheet:
                         row[2].value, row[3].value, row[4].value, row[5].value], 0, 8, 7, row)
     print(f'Generated {count} for model....')
     count += 1
+    
 model_wb.close()
+first_runner_temp.close()
+participant_temp.close()
+second_runner_temp.close()
+winner_temp.close()
