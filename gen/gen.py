@@ -7,7 +7,7 @@ class Gen:
         output = 'output/'
     
         if status=='WINNER':
-            win_path = os.path.join('template', 'winner.png')
+            win_path = os.path.join('te mplate', 'winner.png')
         
         elif status=='RUNNER UP':
             win_path = os.path.join('template', 'runner.png')
