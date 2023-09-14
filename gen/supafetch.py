@@ -11,7 +11,7 @@ supabase: Client = create_client(url, key)
 
 
 def fetchEventDetails(event_id: str):
-    details = supabase.table('event').select('*').eq('id', event_id).execute()
+    details = supabase.table('event').select('*').eq('id', event_id).single().execute().data
     return details
 
 
@@ -46,7 +46,7 @@ def fetchMainStudentsFromEvent(event_id: str):
 
 def fetchStudentDetailsFromId(student_id: str):
     response = supabase.table('student').select(
-        'first_name, last_name, class').eq('id', student_id).execute()
+        'first_name, last_name, class').eq('id', student_id).single().execute().data
     return response
 
 
@@ -74,4 +74,3 @@ def fetchAllOnlyParticipants(event_id: str):
     return participantIds
 
 
-fetchAllOnlyParticipants('9a67e80c-712c-4e9c-9ec4-1b7f29dc2b6f')
