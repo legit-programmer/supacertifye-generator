@@ -1,7 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from rest_framework.decorators import api_view
+from rest_framework import status, response
+from .supagen import *
 
-from.import fetch
+# from.import fetch
 
 # Legacy code
 
@@ -14,3 +17,11 @@ from.import fetch
 
 def index(request):
     return HttpResponse('Grinding...🔨🔨🔨')
+
+@api_view(['POST'])
+def generate(request):
+    data = dict(request.data)
+    print(data)
+    supagenerate(data['eventid'][0])
+    uploadAllToBucket(data['eventid'][0])
+    return response.Response(data, status=status.HTTP_200_OK)

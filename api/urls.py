@@ -18,6 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('', include('gen.urls')),
+    path('certify/', include('gen.urls')),
     path('admin/', admin.site.urls),
     # path('generateCerts/', include('gen.urls'))
 ]

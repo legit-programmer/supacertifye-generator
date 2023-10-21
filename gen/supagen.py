@@ -1,13 +1,13 @@
-from supafetch import *
+from .supafetch import *
 from PIL import Image, ImageDraw, ImageFont
 
 
-def generator(name, classs, status, eventname, date):  # changes on gen.py
+def generator(name, classs, status, eventname, date, eventid):  # changes on gen.py
     folders = os.listdir('output/')
-    if eventname not in folders:
-        os.mkdir(f'output/{eventname}')
+    if eventid not in folders:
+        os.mkdir(f'output/{eventid}')
 
-    output = f'output/{eventname}/'
+    output = f'output/{eventid}/'
 
     if status == 1:
         win_path = os.path.join('files', 'win.png')
@@ -41,6 +41,7 @@ def supagenerate(event_id: str):
     onlyParticipantStudents = fetchAllOnlyParticipants(event_id)
     eventname = event['name']
     eventdate = event['date']
+    
 
     # for winners
 
@@ -48,7 +49,7 @@ def supagenerate(event_id: str):
         winnerid = winner['student_id']
         studentDetails = fetchStudentDetailsFromId(winnerid)
         generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
-                  studentDetails['class'], 1, event_id, eventdate)
+                  studentDetails['class'], 1, eventname, eventdate, event_id)
         
     # for runner up
     
@@ -56,7 +57,7 @@ def supagenerate(event_id: str):
         runnerupid = runnerup['student_id']
         studentDetails = fetchStudentDetailsFromId(runnerupid)
         generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
-                  studentDetails['class'], 2, event_id, eventdate)
+                  studentDetails['class'], 2, eventname, eventdate, event_id)
 
     # for second runner up
 
@@ -64,14 +65,14 @@ def supagenerate(event_id: str):
         runnerup2id = runnerup2['student_id']
         studentDetails = fetchStudentDetailsFromId(runnerup2id)
         generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
-                  studentDetails['class'], 3, event_id, eventdate)
+                  studentDetails['class'], 3, eventname, eventdate, event_id)
 
     # for participants
 
     for participantid in onlyParticipantStudents:
         studentDetails = fetchStudentDetailsFromId(participantid)
         generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
-                  studentDetails['class'], 0, event_id, eventdate)
+                  studentDetails['class'], 0, eventname, eventdate, event_id)
 
 def uploadAllToBucket(eventid:str):
     for file in os.listdir(f'output/{eventid}'):
