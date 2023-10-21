@@ -1,17 +1,15 @@
 from .supafetch import *
 from PIL import Image, ImageDraw, ImageFont
+import io
 
 
 def generator(name, classs, status, eventname, date, eventid):  # changes on gen.py
     folders = []
-    
-    try:    
+
+    try:
         folders = os.listdir('output/')
     except FileNotFoundError:
         os.mkdir('output')
-    
-    
-        
 
     if eventid not in folders:
         os.mkdir(f'output/{eventid}')
@@ -40,8 +38,10 @@ def generator(name, classs, status, eventname, date, eventid):  # changes on gen
     draw.text((700, 405), eventname, font=font, fill=(0, 0, 0))
     draw.text((400, 435), date, font=font, fill=(0, 0, 0))
 
-    image.save(output + f'{name}{classs}.png')
-    
+    im_bytes_arr = io.BytesIO()
+    image.save(im_bytes_arr, format='PNG')
+
+    return im_bytes_arr.getvalue()
 
 
 def supagenerate(event_id: str):
@@ -50,45 +50,49 @@ def supagenerate(event_id: str):
     onlyParticipantStudents = fetchAllOnlyParticipants(event_id)
     eventname = event['name']
     eventdate = event['date']
-    
 
+    metadatas = list()
+    
     # for winners
 
     for winner in mainStudents['winner']:
         winnerid = winner['student_id']
         studentDetails = fetchStudentDetailsFromId(winnerid)
-        generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
-                  studentDetails['class'], 1, eventname, eventdate, event_id)
-        
+        im_bytes = generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
+                                 studentDetails['class'], 1, eventname, eventdate, event_id)
+        im_name = studentDetails['first_name'] + studentDetails['last_name'] + studentDetails['class']
+        metadatas.append({'name':im_name, 'bytes':im_bytes})
     # for runner up
-    
+
     for runnerup in mainStudents['runnerup']:
         runnerupid = runnerup['student_id']
         studentDetails = fetchStudentDetailsFromId(runnerupid)
-        generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
-                  studentDetails['class'], 2, eventname, eventdate, event_id)
-
+        im_bytes = generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
+                                 studentDetails['class'], 2, eventname, eventdate, event_id)
+        im_name = studentDetails['first_name'] + studentDetails['last_name'] + studentDetails['class']
+        metadatas.append({'name':im_name, 'bytes':im_bytes})
     # for second runner up
 
     for runnerup2 in mainStudents['secondrunnerup']:
         runnerup2id = runnerup2['student_id']
         studentDetails = fetchStudentDetailsFromId(runnerup2id)
-        generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
+        im_bytes = generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
                   studentDetails['class'], 3, eventname, eventdate, event_id)
-
+        im_name = studentDetails['first_name'] + studentDetails['last_name'] + studentDetails['class']
+        metadatas.append({'name':im_name, 'bytes':im_bytes})
     # for participants
 
     for participantid in onlyParticipantStudents:
         studentDetails = fetchStudentDetailsFromId(participantid)
-        generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
+        im_bytes = generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
                   studentDetails['class'], 0, eventname, eventdate, event_id)
+        im_name = studentDetails['first_name'] + studentDetails['last_name'] + studentDetails['class']
+        metadatas.append({'name':im_name, 'bytes':im_bytes})
+    
+    return metadatas
 
-def uploadAllToBucket(eventid:str):
-    for file in os.listdir(f'output/{eventid}'):
-        saveToBucket(eventid, f'output/{eventid}/{file}')
-        os.remove(f'output/{eventid}/{file}')
-    os.rmdir(f'output/{eventid}')
-    os.rmdir(f'output')
-
-
-
+def uploadAllToBucket(eventid: str, metadata_arr):
+    
+    for data in metadata_arr:
+        saveToBucket(eventid, data)
+    

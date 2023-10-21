@@ -21,7 +21,6 @@ def index(request):
 @api_view(['POST'])
 def generate(request):
     data = dict(request.data)
-    print(data)
-    supagenerate(data['eventid'][0])
-    uploadAllToBucket(data['eventid'][0])
+    arr = supagenerate(data['eventid'][0])
+    uploadAllToBucket(data['eventid'][0], arr)
     return response.Response(data, status=status.HTTP_200_OK)

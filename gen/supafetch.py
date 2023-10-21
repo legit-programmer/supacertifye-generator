@@ -73,9 +73,6 @@ def fetchAllOnlyParticipants(event_id: str):
 
     return participantIds
 
-def saveToBucket(eventid:str, file):
-    
-    with open(file, 'rb') as f:
-        fname = f.name.split('/')[-1]
-        supabase.storage.from_("certificates").upload(file=f,path=f'{eventid}/{fname}', file_options={"content-type": "image/png"})
+def saveToBucket(eventid:str, data):
+    supabase.storage.from_("certificates").upload(file=data['bytes'],path=f'{eventid}/{data["name"]}.png', file_options={"content-type": "image/png"})
 
