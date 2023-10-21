@@ -22,7 +22,7 @@ def generator(name, classs, status, eventname, date, eventid):  # changes on gen
 
     image = Image.open(win_path)
     draw = ImageDraw.Draw(image)
-    font = ImageFont.load_default()
+    font = ImageFont.truetype('arial', 25)
 
     draw.text((550, 375), name, font=font, fill=(0, 0, 0))
     draw.text((215, 405), classs, font=font, fill=(0, 0, 0))
