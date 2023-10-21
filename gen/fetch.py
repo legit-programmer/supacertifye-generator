@@ -1,3 +1,6 @@
+# LEGACY CODE
+
+
 # import psycopg2
 # from.import gen
 

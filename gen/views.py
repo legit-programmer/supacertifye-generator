@@ -3,10 +3,14 @@ from django.http import HttpResponse
 
 from.import fetch
 
+# Legacy code
+
+# def index(request):
+#     if request.method == 'GET':
+#         fetch.runner()
+#         print("certificates generateed succesfully✅")
+#         return HttpResponse("generated")
+
+
 def index(request):
-    if request.method == 'GET':
-        fetch.runner()
-        print("certificates generateed succesfully✅")
-        return HttpResponse("generated")
-
-
+    return HttpResponse('Grinding...🔨🔨🔨')
