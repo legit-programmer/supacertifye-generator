@@ -3,18 +3,10 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 
 
+
+
 def generator(name, classs, status, eventname, date, eventid):  # changes on gen.py
-    folders = []
-
-    try:
-        folders = os.listdir('output/')
-    except FileNotFoundError:
-        os.mkdir('output')
-
-    if eventid not in folders:
-        os.mkdir(f'output/{eventid}')
-
-    output = f'output/{eventid}/'
+    
 
     if status == 1:
         win_path = os.path.join('files', 'win.png')
@@ -29,9 +21,8 @@ def generator(name, classs, status, eventname, date, eventid):  # changes on gen
         win_path = os.path.join('files', 'par.png')
 
     image = Image.open(win_path)
-
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype("arial.ttf", 25)
+    font = ImageFont.load_default()
 
     draw.text((550, 375), name, font=font, fill=(0, 0, 0))
     draw.text((215, 405), classs, font=font, fill=(0, 0, 0))
