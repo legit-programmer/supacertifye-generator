@@ -3,7 +3,16 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 def generator(name, classs, status, eventname, date, eventid):  # changes on gen.py
-    folders = os.listdir('output/')
+    folders = []
+    
+    try:    
+        folders = os.listdir('output/')
+    except FileNotFoundError:
+        os.mkdir('output')
+    
+    
+        
+
     if eventid not in folders:
         os.mkdir(f'output/{eventid}')
 
@@ -79,6 +88,7 @@ def uploadAllToBucket(eventid:str):
         saveToBucket(eventid, f'output/{eventid}/{file}')
         os.remove(f'output/{eventid}/{file}')
     os.rmdir(f'output/{eventid}')
+    os.rmdir(f'output')
 
 
 
