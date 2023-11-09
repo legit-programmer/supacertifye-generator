@@ -38,10 +38,14 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
 
     # generating template in local directory
 
+    if '.supabase.co' not in template_url:
+        raise UnidentifiedImageError
+    
     res = requests.get(template_url)
     try:
         res.content.decode()
         raise UnidentifiedImageError
+    
     except UnicodeDecodeError:
         pass
 
