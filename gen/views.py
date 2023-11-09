@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from rest_framework.decorators import api_view
 from rest_framework import status, response
 from .supagen import *
+from PIL import UnidentifiedImageError
 
 # from.import fetch
 
@@ -21,6 +22,19 @@ def index(request):
 @api_view(['POST'])
 def generate(request):
     data = dict(request.data)
-    arr = supagenerate(data['eventid'][0])
-    uploadAllToBucket(data['eventid'][0], arr)
+    
+    cords = {'name':data['name_cords'],
+             'class':data['class_cords'],
+             'eventname':data['eventname_cords'],
+             'date':data['date_cords'],
+             'position':data['postion_cords'],
+             }
+    template_url = data['template_url']    
+    try:
+        arr = supagenerate(data['event_id'], cords, template_url)
+        uploadAllToBucket(data['event_id'], arr)
+
+    except UnidentifiedImageError:
+        return response.Response("Please check the template url you posted.", status=status.HTTP_404_NOT_FOUND)
+
     return response.Response(data, status=status.HTTP_200_OK)
