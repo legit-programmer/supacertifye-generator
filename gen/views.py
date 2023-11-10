@@ -34,7 +34,7 @@ def generate(request):
         arr = supagenerate(data['event_id'], cords, template_url)
         uploadAllToBucket(data['event_id'], arr)
 
-    except UnidentifiedImageError:
-        return response.Response("Please check the template url you posted.", status=status.HTTP_404_NOT_FOUND)
+    except Exception:
+        return response.Response("Please check your request format or the template url you posted.", status=status.HTTP_400_BAD_REQUEST)
 
     return response.Response(data, status=status.HTTP_200_OK)

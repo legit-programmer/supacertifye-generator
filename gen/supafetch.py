@@ -3,6 +3,7 @@ import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import itertools
+from colorama import Fore
 
 load_dotenv()
 url: str = os.environ.get("SUPABASE_URL")
@@ -10,7 +11,7 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 def log(msg:str):
-    print('[CERTIFY CORE] ' + msg)
+    print(Fore.YELLOW + '[CERTIFY CORE] ' + Fore.LIGHTGREEN_EX + msg + Fore.WHITE)
 
 def fetchEventDetails(event_id: str):
     log('FETCHING EVENT DETAILS FOR ' + event_id)

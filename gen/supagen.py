@@ -39,13 +39,13 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
     # generating template in local directory
 
     if '.supabase.co' not in template_url:
-        raise UnidentifiedImageError
-    
+        raise ValueError
+
     res = requests.get(template_url)
+
     try:
         res.content.decode()
         raise UnidentifiedImageError
-    
     except UnicodeDecodeError:
         pass
 
@@ -56,6 +56,7 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
 
     # for winners
 
+    log('STARTED GENERATING CERTIFICATES FOR WINNERS')
     for winner in mainStudents['winner']:
         winnerid = winner['student_id']
         studentDetails = fetchStudentDetailsFromId(winnerid)
@@ -64,7 +65,11 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
         im_name = studentDetails['first_name'] + \
             studentDetails['last_name'] + studentDetails['class']
         metadatas.append({'name': im_name, 'bytes': im_bytes})
+    log('GENERATED CERTIFICATES FOR WINNERS')
+
     # for runner up
+
+    log('STARTED GENERATING CERTIFICATES FOR RUNNER UPS')
 
     for runnerup in mainStudents['runnerup']:
         runnerupid = runnerup['student_id']
@@ -74,8 +79,11 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
         im_name = studentDetails['first_name'] + \
             studentDetails['last_name'] + studentDetails['class']
         metadatas.append({'name': im_name, 'bytes': im_bytes})
-    # for second runner up
 
+    log('GENERATED CERTIFICATES FOR RUNNER UPS')
+
+    # for second runner up
+    log('STARTED GENERATING CERTIFICATES FOR SECOND RUNNER UPS')
     for runnerup2 in mainStudents['secondrunnerup']:
         runnerup2id = runnerup2['student_id']
         studentDetails = fetchStudentDetailsFromId(runnerup2id)
@@ -84,8 +92,11 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
         im_name = studentDetails['first_name'] + \
             studentDetails['last_name'] + studentDetails['class']
         metadatas.append({'name': im_name, 'bytes': im_bytes})
-    # for participants
 
+    log('GENERATED CERTIFICATES FOR SECOND RUNNER UPS')
+
+    # for participants
+    log('STARTED GENERATING CERTIFICATES FOR PARTICIPANTS')
     for participantid in onlyParticipantStudents:
         studentDetails = fetchStudentDetailsFromId(participantid)
         im_bytes = generator(f'{studentDetails["first_name"]} {studentDetails["last_name"]}',
@@ -93,6 +104,7 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
         im_name = studentDetails['first_name'] + \
             studentDetails['last_name'] + studentDetails['class']
         metadatas.append({'name': im_name, 'bytes': im_bytes})
+    log('GENERATED CERTIFICATES FOR PARTICIPANTS')
 
     return metadatas
 
