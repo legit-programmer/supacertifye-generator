@@ -30,11 +30,12 @@ def generate(request):
              'position':data['postion_cords'],
              }
     template_url = data['template_url']    
+    arr = supagenerate(data['event_id'], cords, template_url)
     try:
-        arr = supagenerate(data['event_id'], cords, template_url)
         uploadAllToBucket(data['event_id'], arr)
 
-    except Exception:
+    except Exception as e:
+        print(e)
         return response.Response("Please check your request format or the template url you posted.", status=status.HTTP_400_BAD_REQUEST)
 
     return response.Response(data, status=status.HTTP_200_OK)

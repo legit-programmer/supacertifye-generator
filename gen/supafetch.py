@@ -10,20 +10,24 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
-def log(msg:str):
-    print(Fore.YELLOW + '[CERTIFY CORE] ' + Fore.LIGHTGREEN_EX + msg + Fore.WHITE)
+
+def log(msg):
+    print(Fore.YELLOW + '[CERTIFY CORE] ' +
+          Fore.LIGHTGREEN_EX + str(msg) + Fore.WHITE)
+
 
 def fetchEventDetails(event_id: str):
     log('FETCHING EVENT DETAILS FOR ' + event_id)
-    details = supabase.table('event').select('*').eq('id', event_id).single().execute().data
+    details = supabase.table('event').select(
+        '*').eq('id', event_id).single().execute().data
     return details
 
 
 def fetchMainStudentsFromEvent(event_id: str):
     log('FETCHING MAIN STUDENTS FOR ' + event_id)
     mainPosition = supabase.table('eventresult').select(
-        "winner, runner_up, second_runner_up").eq('event_id', event_id).execute()
-    mainPosition = mainPosition.data[0]
+        "winner, runner_up, second_runner_up").eq('event_id', event_id).execute().data
+    mainPosition = mainPosition[0] if mainPosition!=[] else {'winner':None, 'runner_up':None, 'second_runner_up':None}
     winnerId = mainPosition['winner']
     runnerupId = mainPosition['runner_up']
     secondRunnerupId = mainPosition['second_runner_up']
@@ -67,17 +71,15 @@ def fetchAllOnlyParticipants(event_id: str):
         mainStudentCollectionIds.append(i['student_id'])
 
     for group in participatedGroups:
-        
-        groupmembers = supabase.table('groupmember').select('student_id').eq('group_id', group['group_id']).execute().data
+        groupmembers = supabase.table('groupmember').select(
+            'student_id').eq('group_id', group['group_id']).execute().data
         for member in groupmembers:
             # print(mainStudentCollectionIds)
             if member['student_id'] not in mainStudentCollectionIds:
                 participantIds.append(member['student_id'])
-            
-
     return participantIds
 
-def saveToBucket(eventid:str, data):
+def saveToBucket(eventid: str, data):
     log('SAVING A CERTIFICATE TO BUCKET IN : ' + eventid)
-    supabase.storage.from_("certificates").upload(file=data['bytes'],path=f'{eventid}/{data["name"]}.png', file_options={"content-type": "image/png"})
-
+    supabase.storage.from_("certificates").upload(
+        file=data['bytes'], path=f'{eventid}/{data["name"]}.png', file_options={"upsert":"true","content-type": "image/png"})

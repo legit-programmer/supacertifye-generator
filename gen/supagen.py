@@ -12,15 +12,15 @@ def generator(name, classs, event_id, eventname, date, position, cords: dict):  
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype('arial', 25)
 
-    draw.text((cords['name'][0], cords['name'][1]),
+    draw.text((cords['name'][0], cords['name'][1]-25),
               name, font=font, fill=(0, 0, 0))
-    draw.text((cords['class'][0], cords['class'][1]),
+    draw.text((cords['class'][0], cords['class'][1]-25),
               classs, font=font, fill=(0, 0, 0))
-    draw.text((cords['eventname'][0], cords['eventname'][1]),
+    draw.text((cords['eventname'][0], cords['eventname'][1]-25),
               eventname, font=font, fill=(0, 0, 0))
-    draw.text((cords['date'][0], cords['date'][1]),
+    draw.text((cords['date'][0], cords['date'][1]-25),
               date, font=font, fill=(0, 0, 0))
-    draw.text((cords['position'][0], cords['position'][1]),
+    draw.text((cords['position'][0], cords['position'][1]-25),
               position, font=font, fill=(0, 0, 0))
 
     im_bytes_arr = io.BytesIO()
