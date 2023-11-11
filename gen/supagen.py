@@ -45,7 +45,7 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
 
     try:
         res.content.decode()
-        raise UnidentifiedImageError
+        raise UnidentifiedImageError("Please provide correct template")
     except UnicodeDecodeError:
         pass
 
