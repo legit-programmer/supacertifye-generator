@@ -25,28 +25,45 @@ def fetchEventDetails(event_id: str):
 
 def fetchMainStudentsFromEvent(event_id: str):
     log('FETCHING MAIN STUDENTS FOR ' + event_id)
+
     mainPosition = supabase.table('eventresult').select(
         "winner, runner_up, second_runner_up").eq('event_id', event_id).execute().data
-    mainPosition = mainPosition[0] if mainPosition!=[] else {'winner':None, 'runner_up':None, 'second_runner_up':None}
-    winnerId = mainPosition['winner']
-    runnerupId = mainPosition['runner_up']
-    secondRunnerupId = mainPosition['second_runner_up']
+    log(mainPosition)
+    # check this out!!!!! main postion can now return more than one element below
+    #  solution wont work!
+    winnerGrpIds = []
+    runnerUpGrpIds = []
+    secondRunnerUpGrpIds = []
+
+    for secondaryPostion in mainPosition:
+        if secondaryPostion['winner'] != None:
+            winnerGrpIds.append(secondaryPostion['winner'])
+        if secondaryPostion['runner_up'] != None:
+            runnerUpGrpIds.append(secondaryPostion['runner_up'])
+        if secondaryPostion['second_runner_up'] != None:
+            secondRunnerUpGrpIds.append(secondaryPostion['second_runner_up'])
+
+    mainPosition = {
+        'winner': winnerGrpIds, 'runner_up': runnerUpGrpIds, 'second_runner_up': secondRunnerUpGrpIds} if mainPosition != [] else {
+        'winner': None, 'runner_up': None, 'second_runner_up': None}
+
     winnerMembers = []
     firstRunnerUpMembers = []
     secondRunnerUpMembers = []
-    if winnerId != None:
-        winnerMembers = supabase.table('groupmember').select(
-            "student_id").eq('group_id', mainPosition['winner']).execute().data
 
-    if runnerupId != None:
+    for group in winnerGrpIds:
+        winnerMembers = list(itertools.chain(winnerMembers, supabase.table('groupmember').select(
+            "student_id").eq('group_id', group).execute().data))
 
-        firstRunnerUpMembers = supabase.table('groupmember').select(
-            "student_id").eq('group_id', mainPosition['runner_up']).execute().data
+    for group in runnerUpGrpIds:
+        firstRunnerUpMembers = list(itertools.chain(firstRunnerUpMembers, supabase.table('groupmember').select(
+            "student_id").eq('group_id', group).execute().data))
 
-    if secondRunnerupId != None:
-        secondRunnerUpMembers = supabase.table('groupmember').select(
-            "student_id").eq('group_id', mainPosition['second_runner_up']).execute().data
-
+    for group in secondRunnerUpGrpIds:
+        secondRunnerUpMembers = list(itertools.chain(secondRunnerUpMembers, supabase.table('groupmember').select(
+            "student_id").eq('group_id', group).execute().data))
+    log({'winner': winnerMembers, 'runnerup': firstRunnerUpMembers,
+        'secondrunnerup': secondRunnerUpMembers})
     return {'winner': winnerMembers, 'runnerup': firstRunnerUpMembers, 'secondrunnerup': secondRunnerUpMembers}
 
 
@@ -79,7 +96,14 @@ def fetchAllOnlyParticipants(event_id: str):
                 participantIds.append(member['student_id'])
     return participantIds
 
+
 def saveToBucket(eventid: str, data):
     log('SAVING A CERTIFICATE TO BUCKET IN : ' + eventid)
-    supabase.storage.from_("certificates").upload(
-        file=data['bytes'], path=f'{eventid}/{data["name"]}.png', file_options={"upsert":"true","content-type": "image/png"})
+    def upload():
+        supabase.storage.from_("certificates").upload(
+        file=data['bytes'], path=f'{eventid}/{data["name"]}.png', file_options={"upsert": "true", "content-type": "image/png"})
+    try:
+        upload()
+    except Exception:
+        supabase.storage.from_('certificates').remove([f'{eventid}/{data["name"]}.png'])
+        upload()

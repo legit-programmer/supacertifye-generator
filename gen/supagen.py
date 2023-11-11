@@ -116,3 +116,4 @@ def uploadAllToBucket(eventid: str, metadata_arr):
 
     # deleting template after generating certificates
     os.remove(eventid + '.png')
+    supabase.storage.from_('templates').remove([eventid + '.png'])
