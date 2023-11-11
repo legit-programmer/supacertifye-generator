@@ -4,14 +4,18 @@ import io
 import os
 import requests
 from PIL import UnidentifiedImageError
+import sys
 
 
 def generator(name, classs, event_id, eventname, date, position, cords: dict):  # changes on gen.py
 
     image = Image.open(event_id + '.png')
     draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype('arial', 25)
 
+    if sys.platform == 'linux' or sys.platform == 'linux2':
+        font = ImageFont.truetype('RobotoCondensed-Bold.ttf', 25)
+    else:
+        font = ImageFont.truetype('arial', 25)
     draw.text((cords['name'][0], cords['name'][1]-25),
               name, font=font, fill=(0, 0, 0))
     draw.text((cords['class'][0], cords['class'][1]-25),
