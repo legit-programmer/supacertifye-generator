@@ -30,8 +30,8 @@ def generate(request):
              'position':data['postion_cords'],
              }
     template_url = data['template_url']    
-    arr = supagenerate(data['event_id'], cords, template_url)
     try:
+        arr = supagenerate(data['event_id'], cords, template_url)
         uploadAllToBucket(data['event_id'], arr)
 
     except Exception as e:
