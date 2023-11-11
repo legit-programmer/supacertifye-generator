@@ -28,9 +28,8 @@ def fetchMainStudentsFromEvent(event_id: str):
 
     mainPosition = supabase.table('eventresult').select(
         "winner, runner_up, second_runner_up").eq('event_id', event_id).execute().data
-    log(mainPosition)
-    # check this out!!!!! main postion can now return more than one element below
-    #  solution wont work!
+    
+    
     winnerGrpIds = []
     runnerUpGrpIds = []
     secondRunnerUpGrpIds = []
