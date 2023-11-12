@@ -143,4 +143,4 @@ def zipAndUpload(event_id: str, byte_arr: list):
     supabase.storage.from_('certificates').upload(path=f'{event_id}.zip', file=zipPath, file_options={'x-upsert': "true", 'content-type':
                                                                                                             'image/png'})
     
-    # supabase.storage.from_('templates').remove(f'{event_id}.png')
+    supabase.storage.from_('templates').remove(f'{event_id}.png')
