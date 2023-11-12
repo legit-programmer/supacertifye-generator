@@ -126,20 +126,21 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
 
 def zipAndUpload(event_id: str, byte_arr: list):
     
-    files = os.listdir()
+    files = os.listdir('output')
     for file in files:
         if '.zip' in file:
-            os.remove(file)
-
-    with ZipFile(f'{event_id}.zip', 'w') as zip:
+            os.remove('output/' + file)
+        elif '.png' in file:
+            os.remove('output/' + file)
+    with ZipFile(f'output/{event_id}.zip', 'w') as zip:
         for file in byte_arr:
-            filename = f"{file['name']}.png"
+            filename = f"output/{file['name']}.png"
             with open(filename, 'wb') as f:
                 f.write(file['bytes'])
                 zip.write(filename)
-            os.remove(filename)
-    supabase.storage.from_('certificates').upload(path=f'{event_id}.zip', file=f'{event_id}.zip', file_options={'x-upsert': "true", 'content-type':
+            
+    zipPath = f'output/{event_id}.zip'
+    supabase.storage.from_('certificates').upload(path=f'{event_id}.zip', file=zipPath, file_options={'x-upsert': "true", 'content-type':
                                                                                                             'image/png'})
     
-    os.remove(f'{event_id}.png')
-    supabase.storage.from_('templates').remove(f'{event_id}.png')
+    # supabase.storage.from_('templates').remove(f'{event_id}.png')
