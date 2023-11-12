@@ -137,7 +137,7 @@ def zipAndUpload(event_id: str, byte_arr: list):
             filename = f"output/{file['name']}.png"
             with open(filename, 'wb') as f:
                 f.write(file['bytes'])
-                zip.write(filename)
+            zip.write(filename)
             
     zipPath = f'output/{event_id}.zip'
     supabase.storage.from_('certificates').upload(path=f'{event_id}.zip', file=zipPath, file_options={'x-upsert': "true", 'content-type':
