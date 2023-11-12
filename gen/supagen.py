@@ -5,6 +5,7 @@ import os
 import requests
 from PIL import UnidentifiedImageError
 import sys
+from zipfile import ZipFile
 
 
 def generator(name, classs, event_id, eventname, date, position, cords: dict):  # changes on gen.py
@@ -112,12 +113,33 @@ def supagenerate(event_id: str, cords: dict, template_url: str):
 
     return metadatas
 
+#legacy code
+# def uploadAllToBucket(eventid: str, metadata_arr):
 
-def uploadAllToBucket(eventid: str, metadata_arr):
+#     for data in metadata_arr:
+#         saveToBucket(eventid, data)
 
-    for data in metadata_arr:
-        saveToBucket(eventid, data)
+#     # deleting template after generating certificates
+#     os.remove(eventid + '.png')
+#     supabase.storage.from_('templates').remove([eventid + '.png'])
 
-    # deleting template after generating certificates
-    os.remove(eventid + '.png')
-    supabase.storage.from_('templates').remove([eventid + '.png'])
+
+def zipAndUpload(event_id: str, byte_arr: list):
+    
+    files = os.listdir()
+    for file in files:
+        if '.zip' in file:
+            os.remove(file)
+
+    with ZipFile(f'{event_id}.zip', 'w') as zip:
+        for file in byte_arr:
+            filename = f"{file['name']}.png"
+            with open(filename, 'wb') as f:
+                f.write(file['bytes'])
+                zip.write(filename)
+            os.remove(filename)
+    supabase.storage.from_('certificates').upload(path=f'{event_id}.zip', file=f'{event_id}.zip', file_options={'x-upsert': "true", 'content-type':
+                                                                                                            'image/png'})
+    
+    os.remove(f'{event_id}.png')
+    supabase.storage.from_('templates').remove(f'{event_id}.png')

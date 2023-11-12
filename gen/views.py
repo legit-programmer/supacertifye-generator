@@ -32,7 +32,8 @@ def generate(request):
     template_url = data['template_url']    
     try:
         arr = supagenerate(data['event_id'], cords, template_url)
-        uploadAllToBucket(data['event_id'], arr)
+        zipAndUpload(data['event_id'], arr)
+        # uploadAllToBucket(data['event_id'], arr)
 
     except Exception as e:
         print(e)
