@@ -144,3 +144,4 @@ def zipAndUpload(event_id: str, byte_arr: list):
                                                                                                             'image/png'})
     
     supabase.storage.from_('templates').remove(f'{event_id}.png')
+    os.remove(f'{event_id}.png')
