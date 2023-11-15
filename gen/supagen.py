@@ -14,7 +14,7 @@ def generator(name, classs, event_id, eventname, date, position, cords: dict):  
     draw = ImageDraw.Draw(image)
 
     if sys.platform == 'linux' or sys.platform == 'linux2':
-        font = ImageFont.truetype('RobotoCondensed-Bold.ttf', 25)
+        font = ImageFont.truetype('Junicode-Italic.ttf', 25)
     else:
         font = ImageFont.truetype('arial', 25)
     draw.text((cords['name'][0], cords['name'][1]-25),
