@@ -23,8 +23,8 @@ def index(request):
 @api_view(['POST'])
 def generate(request):
     data = dict(request.data)
-    print(data['token'])
-    if data['token'] == os.environ.get('REQUEST_TOKEN'):
+    
+    if data.get('token') == os.environ.get('REQUEST_TOKEN'):
         cords = {'name':data['name_cords'],
                 'class':data['class_cords'],
                 'eventname':data['eventname_cords'],
