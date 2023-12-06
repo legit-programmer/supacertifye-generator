@@ -31,9 +31,10 @@ def generate(request):
                 'date':data['date_cords'],
                 'position':data['postion_cords'],
                 }
-        template_url = data['template_url']    
+        template_url = data['template_url']
+        fontSize = data['fontSize']
         try:
-            arr = supagenerate(data['event_id'], cords, template_url)
+            arr = supagenerate(data['event_id'], cords, template_url, fontSize)
             zipAndUpload(data['event_id'], arr)
             # uploadAllToBucket(data['event_id'], arr)
 
