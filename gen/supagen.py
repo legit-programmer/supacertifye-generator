@@ -17,6 +17,7 @@ def generator(name, classs, event_id, eventname, date, position, cords: dict, fo
         font = ImageFont.truetype('Junicode-Italic.ttf', fontSize)
     else:
         font = ImageFont.truetype('arial', fontSize)
+    fontSize-=3
     draw.text((cords['name'][0], cords['name'][1]-fontSize),
               name, font=font, fill=(0, 0, 0))
     draw.text((cords['class'][0], cords['class'][1]-fontSize),
