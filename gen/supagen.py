@@ -9,7 +9,7 @@ from zipfile import ZipFile
 
 
 def generator(name, classs, event_id, eventname, date, position, cords: dict, fontSize: int):  # changes on gen.py
-
+    log(f'Generating for {name}')
     image = Image.open(event_id + '.png')
     draw = ImageDraw.Draw(image)
 
@@ -34,16 +34,7 @@ def generator(name, classs, event_id, eventname, date, position, cords: dict, fo
 
     return im_bytes_arr.getvalue()
 
-
-def supagenerate(event_id: str, cords: dict, template_url: str, fontSize: int):
-    event = fetchEventDetails(event_id)
-    mainStudents = fetchMainStudentsFromEvent(event_id)
-    onlyParticipantStudents = fetchAllOnlyParticipants(event_id)
-    eventname = event['name']
-    eventdate = event['date']
-
-    # generating template in local directory
-
+def getTemplate(event_id:str, template_url:str):
     if '.supabase.co' not in template_url:
         raise ValueError
 
@@ -58,10 +49,20 @@ def supagenerate(event_id: str, cords: dict, template_url: str, fontSize: int):
     with open(event_id + '.png', 'wb') as file:
         file.write(res.content)
 
-    metadatas = list()
+def supagenerate(event_id: str, cords: dict, template_url: str, fontSize: int):
+    event = fetchEventDetails(event_id)
+    mainStudents = fetchMainStudentsFromEvent(event_id)
+    onlyParticipantStudents = fetchAllOnlyParticipants(event_id)
+    eventname = event['name']
+    eventdate = event['date']
+
+    # generating template in local directory
+
+    getTemplate(event_id, template_url)
 
     # for winners
 
+    metadatas = list()
     log('STARTED GENERATING CERTIFICATES FOR WINNERS')
     for winner in mainStudents['winner']:
         winnerid = winner['student_id']
