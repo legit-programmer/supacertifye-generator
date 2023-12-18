@@ -18,16 +18,14 @@ def generate(request):
 
     if data.get('token') == os.environ.get('REQUEST_TOKEN'):
         
-        
+        try:
             t = threading.Thread(target=lambda: generation_process(data))
-
             t.start()
-            
             return response.Response({'message':"Generation Started!"}, status=status.HTTP_200_OK)
 
-        # except Exception as e:
-        #     print(e)
-        #     return response.Response("Please check your request format or the template url you posted.", status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return response.Response("Please check your request format or the template url you posted.", status=status.HTTP_400_BAD_REQUEST)
 
     return response.Response("Forbidden", status.HTTP_403_FORBIDDEN)
 
