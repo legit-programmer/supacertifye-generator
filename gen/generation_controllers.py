@@ -1,4 +1,4 @@
-from .supafetch import *
+from .fetch_controllers import *
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os
@@ -147,3 +147,5 @@ def zipAndUpload(event_id: str, byte_arr: list):
 
     supabase.storage.from_('templates').remove(f'{event_id}.png')
     os.remove(f'{event_id}.png')
+
+
