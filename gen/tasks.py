@@ -1,5 +1,5 @@
 from .generation_controllers import *
-from .fetch_controllers import setGenerationState
+
 
 
 
@@ -14,11 +14,11 @@ def generation_process(data):
     fontSize = data['fontSize']
     test = data['test']
     if not test:
-        setGenerationState(data['event_id'], True)
+        
         arr = supagenerate(
             data['event_id'], cords, template_url, fontSize)
         zipAndUpload(data['event_id'], arr)
-        setGenerationState(data['event_id'], False)
+        
         # uploadAllToBucket(data['event_id'], arr)
     else:
         getTemplate(data['event_id'], template_url)
