@@ -19,9 +19,8 @@ def generate(request):
     if data.get('token') == os.environ.get('REQUEST_TOKEN'):
         
         try:
-            t = threading.Thread(target=lambda: generation_process(data))
-            t.start()
-            return response.Response({'message':"Generation Started!"}, status=status.HTTP_200_OK)
+            generation_process(data)
+            return response.Response({'message':"Generation Complete!"}, status=status.HTTP_200_OK)
 
         except Exception as e:
             print(e)

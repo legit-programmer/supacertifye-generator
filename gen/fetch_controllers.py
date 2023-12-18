@@ -15,11 +15,6 @@ def log(msg):
     print(Fore.YELLOW + '[CERTIFY CORE] ' +
           Fore.LIGHTGREEN_EX + str(msg) + Fore.WHITE)
 
-def setGenerationState(event_id:str, is_generating:bool):
-    supabase.from_('generation_state').upsert({
-        'event_id':event_id,
-        'generating':is_generating
-    }).execute()
 
 def fetchEventDetails(event_id: str):
     log('FETCHING EVENT DETAILS FOR ' + event_id)
