@@ -10,8 +10,8 @@ second_runner_temp = Image.open(os.path.join(os.getcwd(), 'files/2run.png'))
 winner_temp = Image.open(os.path.join(os.getcwd(), 'files/win.png'))
 
 
-poster = os.path.join(os.getcwd(), 'files/poster.xlsx')
-model = os.path.join(os.getcwd(), 'files/model.xlsx')
+poster = os.path.join(os.getcwd(), 'files/poster.xls')
+model = os.path.join(os.getcwd(), 'files/model.xls')
 
 
 branches = {
@@ -101,7 +101,7 @@ for row in model_sheet:
                         row[2].value, row[3].value, row[4].value, row[5].value], 0, 8, 7, row)
     print(f'Generated {count} for model....')
     count += 1
-    
+
 model_wb.close()
 first_runner_temp.close()
 participant_temp.close()

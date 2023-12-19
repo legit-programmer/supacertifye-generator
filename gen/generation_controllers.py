@@ -129,16 +129,17 @@ def supagenerate(event_id: str, cords: dict, template_url: str, fontSize: int):
 #     os.remove(eventid + '.png')
 #     supabase.storage.from_('templates').remove([eventid + '.png'])
 
+
 def clearOutputDir():
     files = os.listdir('output')
     for file in files:
         os.remove('output/' + file)
 
+
 def zipAndUpload(event_id: str, byte_arr: list):
 
-    clearOutputDir()    
-        
-        
+    clearOutputDir()
+
     with ZipFile(f'output/{event_id}.zip', 'w') as zip:
         for file in byte_arr:
             filename = f"output/{file['name']}.png"
@@ -156,8 +157,8 @@ def zipAndUpload(event_id: str, byte_arr: list):
 
 def generateExcelSheet(event_id: str):
     BRANCHES = ['IF', 'EJ', 'CO', 'CE', 'ME']
-    wb = openpyxl.Workbook() if f'{event_id}.xlsx' not in os.listdir('output'
-    ) else openpyxl.load_workbook(f'output/{event_id}.xlsx')
+    wb = openpyxl.Workbook() if f'{event_id}.xls' not in os.listdir('output'
+                                                                    ) else openpyxl.load_workbook(f'output/{event_id}.xls')
     event_details = fetchEventDetails(event_id)
     for branch in BRANCHES:
         sheet = wb.create_sheet(branch)
@@ -190,9 +191,9 @@ def generateExcelSheet(event_id: str):
             cell = sheet.cell(row=i+2, column=event_details['team_limit']+1)
             cell.value = branchdata[i]['group']['groupmember'][0]['student']['class']
 
-        wb.save(f'output/{event_id}.xlsx')
+        wb.save(f'output/{event_id}.xls')
 
 
 def uploadSheet(event_id):
-    supabase.storage.from_('sheets').upload(f'{event_id}.xlsx', f'output/{event_id}.xlsx', {
+    supabase.storage.from_('sheets').upload(f'{event_id}.xls', f'output/{event_id}.xls', {
         'x-upsert': "true"})
