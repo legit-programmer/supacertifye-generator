@@ -1,4 +1,4 @@
-from fetch_controllers import *
+from .fetch_controllers import *
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os
@@ -129,15 +129,16 @@ def supagenerate(event_id: str, cords: dict, template_url: str, fontSize: int):
 #     os.remove(eventid + '.png')
 #     supabase.storage.from_('templates').remove([eventid + '.png'])
 
+def clearOutputDir():
+    files = os.listdir('output')
+    for file in files:
+        os.remove('output/' + file)
 
 def zipAndUpload(event_id: str, byte_arr: list):
 
-    files = os.listdir('output')
-    for file in files:
-        if '.zip' in file:
-            os.remove('output/' + file)
-        elif '.png' in file:
-            os.remove('output/' + file)
+    clearOutputDir()    
+        
+        
     with ZipFile(f'output/{event_id}.zip', 'w') as zip:
         for file in byte_arr:
             filename = f"output/{file['name']}.png"
@@ -155,12 +156,12 @@ def zipAndUpload(event_id: str, byte_arr: list):
 
 def generateExcelSheet(event_id: str):
     BRANCHES = ['IF', 'EJ', 'CO', 'CE', 'ME']
-    wb = openpyxl.Workbook() if f'{event_id}.xlsx' not in os.listdir(
-    ) else openpyxl.load_workbook(f'{event_id}.xlsx')
+    wb = openpyxl.Workbook() if f'{event_id}.xlsx' not in os.listdir('output'
+    ) else openpyxl.load_workbook(f'output/{event_id}.xlsx')
     event_details = fetchEventDetails(event_id)
     for branch in BRANCHES:
         sheet = wb.create_sheet(branch)
-    
+
         tydata = supabase.from_('eventparticipant').select("event_id, group!inner(groupmember!inner(student!inner(first_name, last_name, class, enrollment)))").eq(
             'group.groupmember.student.class', f'TY{branch}').eq('event_id', event_id).execute().data
         sydata = supabase.from_('eventparticipant').select("event_id, group!inner(groupmember!inner(student!inner(first_name, last_name, class, enrollment)))").eq(
@@ -179,9 +180,9 @@ def generateExcelSheet(event_id: str):
         cell.font = bold
         for i in range(len(branchdata)):
             count = 1
-            
+
             for member in branchdata[i]['group']['groupmember']:
-                
+
                 cell = sheet.cell(row=i+2, column=count)
                 cell.value = member['student']['first_name'] + \
                     member['student']['last_name']
@@ -189,7 +190,9 @@ def generateExcelSheet(event_id: str):
             cell = sheet.cell(row=i+2, column=event_details['team_limit']+1)
             cell.value = branchdata[i]['group']['groupmember'][0]['student']['class']
 
-        wb.save(f'{event_id}.xlsx')
+        wb.save(f'output/{event_id}.xlsx')
 
 
-generateExcelSheet('24971713-b240-495d-95df-a1e870a52a02')
+def uploadSheet(event_id):
+    supabase.storage.from_('sheets').upload(f'{event_id}.xlsx', f'output/{event_id}.xlsx', {
+        'x-upsert': "true", 'content-type':                                                           'application/vnd.ms-excel'})

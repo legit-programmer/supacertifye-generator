@@ -19,6 +19,7 @@ def generate(request):
     if data.get('token') == os.environ.get('REQUEST_TOKEN'):
         
         try:
+            clearOutputDir()
             generation_process(data)
             return response.Response({'message':"Generation Complete!"}, status=status.HTTP_200_OK)
 
@@ -28,6 +29,21 @@ def generate(request):
 
     return response.Response("Forbidden", status.HTTP_403_FORBIDDEN)
 
+@api_view(['POST'])
+def generate_sheet(request):
+    data = dict(request.data)
+    
+    if data.get('token') == os.environ.get('REQUEST_TOKEN'):
+
+        try:
+            clearOutputDir()
+            generateExcelSheet(data['event_id'])
+            uploadSheet(data['event_id'])
+            return response.Response({'message':"Generation Complete!"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return response.Response("Error occured.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return response.Response("Forbidden", status.HTTP_403_FORBIDDEN)
 
 # Legacy code
 
