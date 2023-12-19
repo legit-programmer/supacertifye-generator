@@ -1,4 +1,4 @@
-from .fetch_controllers import *
+from fetch_controllers import *
 from PIL import Image, ImageDraw, ImageFont
 import io
 import os
@@ -6,6 +6,8 @@ import requests
 from PIL import UnidentifiedImageError
 import sys
 from zipfile import ZipFile
+import openpyxl
+from openpyxl.styles import *
 
 
 def generator(name, classs, event_id, eventname, date, position, cords: dict, fontSize: int):  # changes on gen.py
@@ -17,7 +19,7 @@ def generator(name, classs, event_id, eventname, date, position, cords: dict, fo
         font = ImageFont.truetype('Junicode-Italic.ttf', fontSize)
     else:
         font = ImageFont.truetype('arial', fontSize)
-    fontSize-=3
+    fontSize -= 3
     draw.text((cords['name'][0], cords['name'][1]-fontSize),
               name, font=font, fill=(0, 0, 0))
     draw.text((cords['class'][0], cords['class'][1]-fontSize),
@@ -34,7 +36,8 @@ def generator(name, classs, event_id, eventname, date, position, cords: dict, fo
 
     return im_bytes_arr.getvalue()
 
-def getTemplate(event_id:str, template_url:str):
+
+def getTemplate(event_id: str, template_url: str):
     if '.supabase.co' not in template_url:
         raise ValueError
 
@@ -48,6 +51,7 @@ def getTemplate(event_id:str, template_url:str):
 
     with open(event_id + '.png', 'wb') as file:
         file.write(res.content)
+
 
 def supagenerate(event_id: str, cords: dict, template_url: str, fontSize: int):
     event = fetchEventDetails(event_id)
@@ -149,3 +153,43 @@ def zipAndUpload(event_id: str, byte_arr: list):
     os.remove(f'{event_id}.png')
 
 
+def generateExcelSheet(event_id: str):
+    BRANCHES = ['IF', 'EJ', 'CO', 'CE', 'ME']
+    wb = openpyxl.Workbook() if f'{event_id}.xlsx' not in os.listdir(
+    ) else openpyxl.load_workbook(f'{event_id}.xlsx')
+    event_details = fetchEventDetails(event_id)
+    for branch in BRANCHES:
+        sheet = wb.create_sheet(branch)
+    
+        tydata = supabase.from_('eventparticipant').select("event_id, group!inner(groupmember!inner(student!inner(first_name, last_name, class, enrollment)))").eq(
+            'group.groupmember.student.class', f'TY{branch}').eq('event_id', event_id).execute().data
+        sydata = supabase.from_('eventparticipant').select("event_id, group!inner(groupmember!inner(student!inner(first_name, last_name, class, enrollment)))").eq(
+            'group.groupmember.student.class', f'SY{branch}').eq('event_id', event_id).execute().data
+        fydata = supabase.from_('eventparticipant').select("event_id, group!inner(groupmember!inner(student!inner(first_name, last_name, class, enrollment)))").eq(
+            'group.groupmember.student.class', f'FY{branch}').eq('event_id', event_id).execute().data
+
+        branchdata: list = list(itertools.chain(tydata, sydata, fydata))
+        bold = Font(bold=True)
+        for i in range(int(event_details['team_limit'])):
+            cell = sheet.cell(row=1, column=i+1)
+            cell.value = f'Member {i+1}'
+            cell.font = bold
+        cell = sheet.cell(row=1, column=(int(event_details['team_limit']))+1)
+        cell.value = 'class'
+        cell.font = bold
+        for i in range(len(branchdata)):
+            count = 1
+            
+            for member in branchdata[i]['group']['groupmember']:
+                
+                cell = sheet.cell(row=i+2, column=count)
+                cell.value = member['student']['first_name'] + \
+                    member['student']['last_name']
+                count += 1
+            cell = sheet.cell(row=i+2, column=event_details['team_limit']+1)
+            cell.value = branchdata[i]['group']['groupmember'][0]['student']['class']
+
+        wb.save(f'{event_id}.xlsx')
+
+
+generateExcelSheet('24971713-b240-495d-95df-a1e870a52a02')

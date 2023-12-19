@@ -22,6 +22,15 @@ def fetchEventDetails(event_id: str):
         '*').eq('id', event_id).single().execute().data
     return details
 
+def fetchAllGroups(event_id:str):
+    log('FETCHING ALL GROUPS FROM' + event_id)
+    groups = supabase.from_('eventparticipant').select('group_id').eq('event_id', event_id).execute().data
+    return groups
+
+def fetchAllMembers(group_id:str):
+    log('FETCHING ALL MEMBERS FROM' + group_id)
+    members = supabase.from_('groupmember').select('student_id').eq('group_id', group_id).execute().data
+    return members
 
 def fetchMainStudentsFromEvent(event_id: str):
     log('FETCHING MAIN STUDENTS FOR ' + event_id)
