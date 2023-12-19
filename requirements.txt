@@ -1,8 +1,15 @@
+amqp==5.2.0
 annotated-types==0.5.0
 anyio==4.0.0
 asgiref==3.7.2
+billiard==4.2.0
+celery==5.3.6
 certifi==2023.7.22
 charset-normalizer==3.3.2
+click==8.1.7
+click-didyoumean==0.3.0
+click-plugins==1.1.1
+click-repl==0.3.0
 colorama==0.4.6
 contourpy==1.1.1
 cycler==0.12.1
@@ -18,12 +25,14 @@ httpcore==0.17.3
 httpx==0.24.1
 idna==3.4
 kiwisolver==1.4.5
+kombu==5.3.4
 matplotlib==3.8.0
 numpy==1.26.1
 openpyxl==3.1.2
 packaging==23.1
 Pillow==10.0.0
 postgrest==0.10.8
+prompt-toolkit==3.0.43
 pydantic==2.3.0
 pydantic_core==2.6.3
 pyparsing==3.1.1
@@ -42,4 +51,6 @@ supafunc==0.2.3
 typing_extensions==4.7.1
 tzdata==2023.3
 urllib3==2.0.7
+vine==5.1.0
+wcwidth==0.2.12
 websockets==10.4
