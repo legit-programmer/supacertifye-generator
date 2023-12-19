@@ -196,4 +196,4 @@ def generateExcelSheet(event_id: str):
 
 def uploadSheet(event_id):
     supabase.storage.from_('sheets').upload(f'{event_id}.xls', f'output/{event_id}.xls', {
-        'x-upsert': "true"})
+        'x-upsert': "true", "content-type": 'application/vnd.ms-excel'})
